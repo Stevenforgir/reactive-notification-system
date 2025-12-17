@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.steven_udemy.notification-system'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    implementation 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    // https://mvnrepository.com/artifact/io.projectreactor/reactor-core
+    implementation 'io.projectreactor:reactor-core:3.8.1'
+
+    implementation 'org.fusesource.jansi:jansi:2.4.0' // For colored console output
+    implementation 'org.apache.logging.log4j:log4j-api:3.0.0-alpha1' // Log4j 3 Alpha
+    implementation 'org.apache.logging.log4j:log4j-core:3.0.0-alpha1' // Log4j 3 Alpha Core
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:3.0.0-alpha1' // Log4j 3 SLF4J Bridge
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,2 @@
+Se realiza el siguiente ejercicio de sinks [Ejercicio notificaciones con sinks (PDF)](doc/3.2-Ejercico-De-Sinks.pdf)
+Todo lo relacionado con dicho ejercicio se encuentra en la carpeta src/main/java/com/bootcamp/reactor/sinks
