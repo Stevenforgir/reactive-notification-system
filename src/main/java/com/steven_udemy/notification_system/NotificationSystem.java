@@ -60,6 +60,25 @@ public class NotificationSystem {
         this.setupProcessingFlows();
     }
 
+    public NotificationSystem(NotificationService teamsService,
+                              NotificationService emailService,
+                              NotificationService phoneService) {
+        this.mainEventSink = Sinks.many().multicast().onBackpressureBuffer(); // el OnbackpressureBuffer es para que no se pierdan eventos si el suscriptor no puede seguir el ritmo del publicador, entonces guarda los eventos en un buffer
+        this.historySink = Sinks.many().replay().limit(50); // guarda los ultimos 50 eventos para que los nuevos suscriptores puedan verlos
+
+        this.teamsSink = Sinks.one(); //suscriptor unico para cada servicio de notificacion
+        this.emailSink = Sinks.one();
+        this.phoneSink = Sinks.one();
+
+        this.phoneService = phoneService;
+        this.teamsService = teamsService;
+        this.emailService = emailService;
+
+        this.notificationCache = new ConcurrentHashMap<>();
+
+        this.setupProcessingFlows();
+    }
+
     private void setupProcessingFlows(){
     //Procesador principal que enruta los eventos a los diferentes canales}
         this.mainEventSink
@@ -78,7 +97,6 @@ public class NotificationSystem {
     private void setupTeamsProcessor(){
         this.teamsSink
                 .asMono()//Se convierte el sink a un mono para procesar un solo evento
-                .repeat() // se repite para procesar multiples eventos
                 .flatMap(event ->
                         this.teamsService.sendNotification(event)
                             .subscribeOn(Schedulers.boundedElastic())//Explicame esto
@@ -92,7 +110,6 @@ public class NotificationSystem {
     private void setupEmailProcessor(){
         this.emailSink
                 .asMono()//Se convierte el sink a un mono para procesar un solo evento
-                .repeat() // se repite para procesar multiples eventos
                 .flatMap(event ->
                         this.emailService.sendNotification(event)
                                 .subscribeOn(Schedulers.boundedElastic())//Dice con que hilo me quiero suscribir, el parametro es el pool de threads
@@ -106,7 +123,6 @@ public class NotificationSystem {
     private void setupPhoneProcessor(){
         this.phoneSink
                 .asMono()//Se convierte el sink a un mono para procesar un solo evento
-                .repeat() // se repite para procesar multiples eventos
                 .flatMap(event ->
                         this.phoneService.sendNotification(event)
                                 .subscribeOn(Schedulers.boundedElastic())//Dice con que hilo me quiero suscribir, el parametro es el pool de threads
